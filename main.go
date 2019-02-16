@@ -14,6 +14,15 @@ func (mr MultiRect) Area() float64 {
 	return area
 }
 
+func(mr MultiRect) IsContainRectWithMinSides(width, height int) bool {
+	for _, r := range mr.Rects {
+		if r.Dx() >= width && r.Dy() >= height {
+			return true
+		}
+	}
+	return false
+}
+
 func (mr *MultiRect) AddRect(r image.Rectangle) {
 	mr.Rects = append(mr.Rects, r)
 }
