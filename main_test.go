@@ -47,3 +47,15 @@ func TestMultiRect(t *testing.T) {
 
 }
 
+func TestMultiRectSub(t *testing.T) {
+	var mr MultiRect
+	mr.AddRect(image.Rect(0, 0, 500, 500))
+
+	subMultiRect := mr.Intersects(image.Rect(100, 100, 150, 150))
+
+	mr.Sub(image.Rect(100, 100, 150, 150))
+
+	subMultiRect2 := mr.Intersects(image.Rect(50, 50, 200, 200))
+	fmt.Println(subMultiRect)
+	fmt.Println(subMultiRect2)
+}

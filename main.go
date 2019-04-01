@@ -27,6 +27,67 @@ func (mr *MultiRect) AddRect(r image.Rectangle) {
 	mr.Rects = append(mr.Rects, r)
 }
 
+func(mr *MultiRect) SubAndReturnIntersects(rin image.Rectangle) MultiRect {
+	var newRects []image.Rectangle
+	var intersects []image.Rectangle
+	for _, r := range mr.Rects {
+		i := rin.Intersect(r)
+		if i.Max.X == 0 && i.Max.Y == 0 {
+			newRects = append(newRects, r)
+			continue
+		}
+
+		intersects = append(intersects, i)
+
+		// make 8 rects
+
+		// left-top
+		if nr := image.Rect(r.Min.X, r.Min.Y, i.Min.X, i.Min.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// center-top
+		if nr := image.Rect(i.Min.X, r.Min.Y, i.Max.X, i.Min.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// right-top
+		if nr := image.Rect(i.Max.X, r.Min.Y, r.Max.X, i.Min.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// left-center
+		if nr := image.Rect(r.Min.X, i.Min.Y, i.Min.X, i.Max.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// right-center
+		if nr := image.Rect(i.Max.X, i.Min.Y, r.Max.X, i.Max.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// left-bottom
+		if nr := image.Rect(r.Min.X, i.Max.Y, i.Min.X, r.Max.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// center-bottom
+		if nr := image.Rect(i.Min.X, i.Max.Y, i.Max.X, r.Max.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+		// right-bottom
+		if nr := image.Rect(i.Max.X, i.Max.Y, r.Max.X, r.Max.Y); !nr.Empty() {
+			newRects = append(newRects, nr)
+		}
+
+	}
+	mr.Rects = newRects
+	return MultiRect{Rects:intersects}
+}
+
+func(mr *MultiRect) Intersects(rin image.Rectangle) MultiRect {
+	var intersects []image.Rectangle
+	for _, r := range mr.Rects {
+		i := rin.Intersect(r)
+		intersects = append(intersects, i)
+	}
+	return MultiRect{Rects:intersects}
+}
+
 func (mr *MultiRect) Sub(rin image.Rectangle) {
 	var newRects []image.Rectangle
 	for _, r := range mr.Rects {
